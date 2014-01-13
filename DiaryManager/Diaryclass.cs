@@ -97,6 +97,8 @@ namespace DiaryManager
         public Management management;
         public Diary()
         {
+            date = DateTime.Now;
+            date.ToString();
 
             
         }

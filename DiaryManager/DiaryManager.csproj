@@ -103,6 +103,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Bold.png" />
+    <None Include="Resources\Italic.png" />
+    <None Include="Resources\Underline.png" />
     <Content Include="resource\buttonBold.png" />
     <Content Include="resource\buttonItalic.png" />
     <Content Include="resource\buttonUnderline.png" />

@@ -8,13 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
 
 
 
 namespace DiaryManager
 {
+    
     public partial class Form1 : Form
     {
+        public string Path = @"C:\Users\SH\Desktop\test";//定义读取日记列表的目录
         //构造函数在这里！
         public Form1()
         {
@@ -23,6 +27,7 @@ namespace DiaryManager
             sv.logoutCompleted += sv_logoutCompleted;
             sv.getNewestDiaryCompleted += sv_getNewestDiaryCompleted;
             setLoggedOut();
+            button2.Text = "更新日记列表";
             
         }
 
@@ -58,10 +63,39 @@ namespace DiaryManager
         {
 
         }
-
+        static Diary loadmandata(string path)
+        {
+            FileStream fs = new FileStream(path, FileMode.Open);
+            XmlReader xr = XmlReader.Create(fs);
+            XmlSerializer xs = new XmlSerializer(typeof(Diary));
+            //Console.WriteLine(((user)xs.Deserialize(xr)).username);
+            //Console.WriteLine(((user)xs.Deserialize(fs)).username);
+            return (Diary)xs.Deserialize(xr);
+        }
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            if (listBox1.SelectedIndex != -1)
+            {
+                string curItem = listBox1.SelectedItem.ToString();
+                if (!string.IsNullOrEmpty(curItem))
+                {
+                    DirectoryInfo dir = new DirectoryInfo(Path);
+                    dir.Create();
+                    FileInfo[] fi = dir.GetFiles();
+                    string p = Path;
+                    for (int i = 0; i < fi.Length; i++)
+                    {
+                        string date = fi[i].LastWriteTime.ToString();
+                        if (date.Equals(curItem))
+                        {
+                            p = p + @"\" + fi[i].Name;
+                            break;
+                        }
+                    }
+                    Diary dr;
+                    dr = loadmandata(p);
+                }
+            }
         }
 
         public bool isLoggedIn = false;
@@ -303,6 +337,21 @@ namespace DiaryManager
         {
             Form2 newForm = new Form2();
             newForm.Show();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            
+            DirectoryInfo dir = new DirectoryInfo(Path);
+            dir.Create();
+            FileInfo[] fi = dir.GetFiles();
+            listBox1.BeginUpdate();
+            listBox1.Items.Clear();
+            for (int i = 0; i < fi.Length; i++)
+            {
+                this.listBox1.Items.Add(fi[i].LastWriteTime);
+            }
+            listBox1.EndUpdate();
         }
     }
 }
